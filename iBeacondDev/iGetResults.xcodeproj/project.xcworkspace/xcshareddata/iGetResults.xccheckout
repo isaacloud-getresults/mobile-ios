@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>18FD009B-3981-4A3E-83FD-F5347ED77F47</string>
+	<key>IDESourceControlProjectName</key>
+	<string>iGetResults</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>1C4A2E03-269D-43D8-AF39-518522F987BD</key>
+		<string>ssh://gitweb.sointeractive.pl/home/git/isaacloud_ibeacon_ios.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>iBeacondDev/iGetResults.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>1C4A2E03-269D-43D8-AF39-518522F987BD</key>
+		<string>../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>ssh://gitweb.sointeractive.pl/home/git/isaacloud_ibeacon_ios.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>1C4A2E03-269D-43D8-AF39-518522F987BD</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1C4A2E03-269D-43D8-AF39-518522F987BD</string>
+			<key>IDESourceControlWCCName</key>
+			<string>isaacloud_ibeacon_ios2</string>
+		</dict>
+	</array>
+</dict>
+</plist>
