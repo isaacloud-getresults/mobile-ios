@@ -64,7 +64,18 @@ static const int SEND_EVENT = 6;
     int aid;
     int gid;
     NSString *token;
+    
+    int mobileID;
+    
+    NSArray *notyficationsArray;
+    
+    NSDictionary *meArray;
+    
+    
+    
 }
+
+
 
 @property (nonatomic, weak) id<ICCSendEventDelegate> sendEventDelegate;
 @property (nonatomic, weak) id<ICCGetUserDelegate> getUserDelegate;
@@ -73,7 +84,10 @@ static const int SEND_EVENT = 6;
 @property (nonatomic, weak) id<ICCLogoutDelegate> logoutDelegate;
 @property (nonatomic, weak) id<ICCRegistrationDelegate> registrationDelegate;
 
+-(NSArray*)getNotificationsArray;
+-(NSDictionary*)getMyselfData;
 -(id)init;
+-(NSArray*) getInterirorAchievements:(NSNumber*)uid;
 -(void)sendPlaceEvent:(NSString*)proximityUUID;
 -(void)sendEnterReginEvent:(NSString*)proximityUUID;
 -(void)sendExitReginEvent:(NSString*)proximityUUID;
@@ -97,16 +111,21 @@ static const int SEND_EVENT = 6;
 -(NSString*) getGroupsNameWithID:(NSNumber*)uid;
 -(NSArray*)getNotifications;
 -(NSArray*) getUsers;
+-(UIImage*) getUserPhotoWithID:(NSNumber*)uid;
+-(NSArray*) getUsersIDs;
 -(NSString*) getMyselfName;
 -(NSArray*) getInteriorsALL;
+-(NSString*) getUserInteriorwithID:(NSNumber*)uid;
 -(NSNumber*)getUserUID;
 -(NSDictionary*) getUserWithUID:(NSNumber*)uid;
 -(NSArray*) getNumberofUsers:(NSNumber*)uid;
 //-(ICUser*) getUserWithICUserForm;
 -(NSArray*)getUserWithName;
+-(NSString*) getMyselfInterior;
 -(NSString*) getUserWithID:(NSNumber*)uid;
 -(NSArray*) getInteriors;
 -(void)sendLoginEvent;
+-(NSArray*) getAchievements;
 -(UIImage*) getMyselfPhoto;
 -(void)sendEnterKitchenEvent:(NSString*)proximityUUID;
 -(NSMutableArray*) Notyficationsfrommy:(NSNumber*)userID;

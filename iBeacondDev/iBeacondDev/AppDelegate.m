@@ -106,14 +106,14 @@
     }
     */
  
-    UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-    
+  //  UILocalNotification *notification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+  /*
     if (notification) {
         [self showAlarm:notification.alertBody];
         NSLog(@"AppDelegate didFinishLaunchingWithOptions");
         application.applicationIconBadgeNumber = 0;
     }
-    
+    */
     [self.window makeKeyAndVisible];
    // [self connectWebSocket];
     
@@ -246,13 +246,13 @@
 //- (void)webSocket:(SRWebSocket *)webSocket didReceiveMessage:(id)message {
 //    NSLog(@"%@",[NSString stringWithFormat:@"%@", message]);
 //}
-
+/*
 - (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification {
     [self showAlarm:notification.alertBody];
     application.applicationIconBadgeNumber = 0;
     NSLog(@"AppDelegate didReceiveLocalNotification %@", notification.userInfo);
 }
-
+*/
 - (BOOL)application:(UIApplication *)application
             openURL:(NSURL *)url
   sourceApplication:(NSString *)sourceApplication
@@ -419,8 +419,7 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    NSLog(@"wykonalo sie");
-    // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+// Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
 

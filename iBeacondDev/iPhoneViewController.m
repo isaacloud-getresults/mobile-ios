@@ -48,26 +48,16 @@
  
  
  */
-    
-   
     FBLoginView *loginView = [[FBLoginView alloc] init];
     
-    
-   
-    
-       
-    // Align the button in the center horizontally
-        
-    [self.activityIndicator stopAnimating];
-    icc = [[IsaaCloudConnector alloc] init];
+         icc = [[IsaaCloudConnector alloc] init];
     icc.registrationDelegate = self;
     icc.loginDelegate = self;
     icc.adminTokenDelegate = self;
     //    [self startNotificationThread];
     
-    
-   //  
-    
+    facebookLogin = FALSE;
+
     self.emailTextField.delegate = self;
     self.passwordTextField.delegate = self;
     self.regemailTextField.delegate = self;
@@ -75,17 +65,15 @@
     self.userNameTextField.delegate = self;
     self.genderTextField.delegate = self;
     
+    self.image.hidden = YES;
+    [self.activityindycator stopAnimating];
+    
+    self.registerImage.hidden = YES;
+    [self.registerActivity stopAnimating];
+    
     NSLog(@"START");
-    
-    
-   // [self loginWithFacebook];
-    
-   //[self registerWithFacebookAnd];
-    
-   // self.loginButton.readPermissions = @[@"public_profile", @"email"];
    
 }
-
 -(void)viewDidAppear:(BOOL)animated{
     
     
@@ -95,9 +83,10 @@
         
     }
     
-  
+    
     
 }
+
 
 -(void)loginWithFacebook{
     
@@ -158,7 +147,12 @@
                      [defaults synchronize];
 
                      
+                     facebookLogin = TRUE;
+                     
+                     
                      [self loginUser];
+                     
+                     
                      
                  }else{
                      NSLog(@"error %@",error);
@@ -171,51 +165,7 @@
     }
     
     
-    
-    /*
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-    [appDelegate openSessionWithAllowLoginUI:YES];
-    
-    if (FBSession.activeSession.isOpen){
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-            if(!error){
-                //NSLog(@"%@",result);
-                
-                userDictionary = (NSDictionary *)result;
-                
-                
-                
-                self.facebookEmail = userDictionary[@"email"];
-                
-                NSLog(@"%@",self.facebookEmail);
-                
-                self.facebookFirstName = userDictionary[@"first_name"];
-                
-                NSLog(@"%@",self.facebookFirstName);
-                
-                self.facebookLastname = userDictionary[@"last_name"];
-                
-                NSLog(@"%@",self.facebookLastname);
-                
-                self.userId = (NSString*)self.facebookEmail;
-                self.pass =@"Getresult1@";
-                
-                
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                [defaults setObject:(NSString*)self.facebookEmail forKey:@"userId"];
-                [defaults setObject:@"Getresult1@" forKey:@"userPassword"];
-                [defaults synchronize];
-                
-                [self loginUser];
-                
-            }else{
-                NSLog(@"error %@",error);
-            }
-        }];
-    }
-
-    */
-}
+  }
 
 -(void)registerWithFacebookAnd{
     
@@ -229,7 +179,7 @@
         [FBSession.activeSession closeAndClearTokenInformation];
         
         // If the session state is not any of the two "open" states when the button is clicked
-    } else {
+   } else {
         // Open a session showing the user the login UI
         // You must ALWAYS ask for public_profile permissions when opening a session
         [FBSession openActiveSessionWithReadPermissions:@[@"public_profile",@"user_birthday",@"email"]
@@ -276,8 +226,12 @@
                      [defaults setObject:(NSString*)userDictionary[@"birthday"] forKey:@"facebookBirthday"];
                      [defaults synchronize];
                      
+                     facebookLogin = TRUE;
+                     
                      
                      [self createUserAccount];
+                     
+                     
                      
                  }else{
                      NSLog(@"error %@",error);
@@ -288,51 +242,6 @@
              
          }];
     }
-    
-    
-    
-    
-    
-   /*
-    
-        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-            if(!error){
-                //NSLog(@"%@",result);
-                
-                userDictionary = (NSDictionary *)result;
-                
-                
-                
-                self.facebookEmail = userDictionary[@"email"];
-                
-                NSLog(@"%@",self.facebookEmail);
-                
-                self.facebookFirstName = userDictionary[@"first_name"];
-                
-                NSLog(@"%@",self.facebookFirstName);
-                
-                self.facebookLastname = userDictionary[@"last_name"];
-                
-                NSLog(@"%@",self.facebookLastname);
-                
-                
-                self.userId = (NSString*)self.facebookEmail;
-                self.pass =@"Getresult1@";
-                
-                NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-                [defaults setObject:(NSString*)self.facebookEmail forKey:@"userId"];
-                [defaults setObject:@"Getresult1@" forKey:@"userPassword"];
-                [defaults synchronize];
-                
-                [self createUserAccount];
-                
-            }else{
-                NSLog(@"error %@",error);
-            }
-        }];
- 
-    
-    */
     
 }
 
@@ -354,18 +263,15 @@
 }
 
 
- #pragma mark - Navigation
- 
- // In a storyboard-based application, you will often want to do a little preparation before navigation
- - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
- {
- // Get the new view controller using [segue destinationViewController].
- // Pass the selected object to the new view controller.
- }
  */
 
 -(void)createUserAccount
 {
+   
+    self.registerImage.hidden = NO;
+    [self.registerActivity startAnimating];
+   
+    
     NSLog(@"Creating user account...");
        [icc getAdminTokenAsync];
    // [self startNotificationThread];
@@ -461,7 +367,8 @@
 {
     NSLog(@"Logging in user... <<<<< loginUser 1");
     
-   
+    self.image.hidden = NO;
+    [self.activityindycator startAnimating];
 
     
     [icc loginUserAsync:(NSString*)self.userId password:self.pass];
@@ -487,6 +394,12 @@
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:err delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         //[self.activityIndicator stopAnimating];
+        self.image.hidden = YES;
+        [self.activityindycator stopAnimating];
+        
+        self.registerImage.hidden = YES;
+        [self.registerActivity stopAnimating];
+
     }
 }
 
@@ -500,6 +413,11 @@
         [alert show];
         NSLog(@"Cannot create user account");
         //[self.activityIndicator stopAnimating];
+
+        self.registerImage.hidden = YES;
+        [self.registerActivity stopAnimating];
+
+        
     }
     else
     {
@@ -516,29 +434,40 @@
 
     if(uid == -1){
         
+        self.image.hidden = YES;
+        [self.activityindycator stopAnimating];
+        
+        self.registerImage.hidden = YES;
+        [self.registerActivity stopAnimating];
+        
         NSString *err = (error == nil) ? @"Cannot log in user." : [error localizedDescription];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error" message:err delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
         [alert show];
         NSLog(@"Cannot login user");
-        [self.activityIndicator stopAnimating];
+        
         }
     else
     {
         
-        if (FBSession.activeSession.state == FBSessionStateOpen
-            || FBSession.activeSession.state == FBSessionStateOpenTokenExtended){
-            
-            [self updateFacebookInformations];
-            
-            NSLog(@"Otwartee");
-        }
-         
+        
         NSLog(@"Welcome %@ (%d)", self.userId, uid);
         
         [icc sendLoginEvent];
         
+        if (facebookLogin) {
+            [self updateFacebookInformations];
+        }
+        
+        
        // [self.activityIndicator stopAnimating];
         NSLog(@"przelacznie...");
+        
+        self.image.hidden = YES;
+        [self.activityindycator stopAnimating];
+        
+        self.registerImage.hidden = YES;
+        [self.registerActivity stopAnimating];
+
         
         [self performSegueWithIdentifier:@"login" sender:self];
     }
@@ -571,6 +500,7 @@
     icc.loginDelegate = nil;
     icc.adminTokenDelegate = nil;
     [icc logoutUserAsync:[[LoggedInUser getInstance] uid]];
+  [FBSession.activeSession closeAndClearTokenInformation];
    
     icc = [[IsaaCloudConnector alloc] init];
     icc.registrationDelegate = self;
@@ -653,6 +583,11 @@
     [defaults setObject:self.pass forKey:@"userPassword"];
     [defaults synchronize];
     
+    facebookLogin = FALSE;
+    
+    self.image.hidden = NO;
+    [self.activityindycator startAnimating];
+    
     [self loginUser];
     
     NSLog(@">>>>>>>>>>>>>>>>>>zalogowany");
@@ -662,18 +597,29 @@
     
    // [self.activityIndicator startAnimating];
     
+    
+    self.registerImage.hidden = NO;
+    [self.registerActivity startAnimating];
+    
     self.userId = self.regemailTextField.text;
     self.pass = self.regPasswordTextField.text;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     [defaults setObject:self.userId forKey:@"userId"];
     [defaults setObject:self.pass forKey:@"userPassword"];
     [defaults synchronize];
+
+    
+    facebookLogin = FALSE;
     
     [self createUserAccount];
     
     NSLog(@">>>>>>>>>>>>>>>>>>registered");
 }
 - (IBAction)loginWithFacebookButton:(id)sender {
+    
+    self.image.hidden = NO;
+    [self.activityindycator startAnimating];
+    
     // if the session state is any of the two "open" states when the button is clicked
     if (FBSession.activeSession.state == FBSessionStateOpen
         || FBSession.activeSession.state == FBSessionStateOpenTokenExtended){
@@ -705,6 +651,11 @@
 
 - (IBAction)registerWithFacebook:(id)sender {
     
+    
+    self.registerImage.hidden = NO;
+    [self.registerActivity startAnimating];
+
+    
     // if the session state is any of the two "open" states when the button is clicked
     if (FBSession.activeSession.state == FBSessionStateOpen
         || FBSession.activeSession.state == FBSessionStateOpenTokenExtended){
@@ -726,6 +677,8 @@
                                           
                                       }];
     }
+    
+   
     
     [self registerWithFacebookAnd];
 

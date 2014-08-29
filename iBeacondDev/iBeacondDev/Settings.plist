@@ -2,15 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>mobileNotification</key>
+	<integer>1</integer>
 	<key>IC Token</key>
 	<string>MTc5OjYzMzZlZmM3ZWM0NTlkNjkzMTczZmQ2YWFhNDZlZTU=</string>
 	<key>IC GID</key>
 	<integer>179</integer>
 	<key>IC AID</key>
-	<integer>328</integer>
-	<key>Proximity UUID Kontakt</key>
-	<string>f7826da6-4fa2-4e98-8024-bc5b71e0893e</string>
-	<key>Proximity UUID Estimote</key>
-	<string>B9407F30-F5F8-466E-AFF9-25556B57FE6D</string>
+	<integer>517</integer>
+	<key>UUID</key>
+	<string>1A2B3C4D-1A2B-1A2B-1A2B-1A2B3C4D5E6F</string>
 </dict>
 </plist>

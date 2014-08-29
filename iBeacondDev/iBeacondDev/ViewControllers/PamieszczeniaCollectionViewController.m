@@ -8,6 +8,8 @@
 
 #import "PamieszczeniaCollectionViewController.h"
 #import "InteriorViewController.h"
+#import "FirstTableViewController.h"
+#import "UserData.h"
 
 @interface PamieszczeniaCollectionViewController ()
 
@@ -36,8 +38,17 @@
     [super viewDidLoad];
 
     icc = [[IsaaCloudConnector alloc]init ];
-    nameArray = [[NSMutableArray alloc]initWithArray:[icc getInteriors] ];
-    NSLog(@"%@",nameArray);
+  //  nameArray = [[NSMutableArray alloc]initWithArray:[icc getInteriors] ];
+   // NSLog(@"%@",nameArray);
+    
+   
+     userData = [UserData globalUserData];
+    
+   
+    
+  pomieszczeniaArray = userData.pomieszczeniaArray;
+    nameArray = userData.nameArray;
+    
     
    // self.beaconManager = [[ESTBeaconManager alloc] init];
    // self.beaconManager.delegate = self;
@@ -52,7 +63,48 @@
     
     // Do any additional setup after loading the view.
     
+   
+    
+    
 }
+
+
+-(void)viewDidDisappear:(BOOL)animated{
+    
+    [timer invalidate];
+    timer = nil;
+    NSLog(@"wylaczono timer");
+    
+}
+
+
+-(void)viewDidAppear:(BOOL)animated{
+    NSLog(@"pokazano widok");
+    timer = [NSTimer scheduledTimerWithTimeInterval:5.0 target:self selector:@selector(updateMethod) userInfo:nil repeats:YES];
+}
+
+
+
+
+- (void) updateMethod
+{
+    NSLog(@"UPDATE");
+    
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+        
+        nameArray = userData.nameArray;
+        
+        
+        
+        
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.collectionView reloadData];
+            
+        });
+    });
+    
+}
+
 
 
 
@@ -79,7 +131,7 @@
 }
 
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section{
-    return [nameArray count];
+    return [pomieszczeniaArray count];
 }
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath{
@@ -93,17 +145,41 @@
     [cell.layer setBorderWidth:1.0f];
     [cell.layer setBorderColor:[UIColor purpleColor].CGColor];
     
+    
+    label1.text = [[pomieszczeniaArray objectAtIndex:indexPath.row]objectForKey:@"label"];
+    
+    
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
        
             
             
-            label1.text = [[nameArray objectAtIndex:indexPath.row]objectForKey:@"label"];
+        
             
             
-            idpomieszczenia = [[nameArray objectAtIndex:indexPath.row]objectForKey:@"id"];
+            idpomieszczenia = [[pomieszczeniaArray objectAtIndex:indexPath.row]objectForKey:@"id"];
+        int z = 0;
+        
+        for (int i = 0; [nameArray count]>i; i++) {
             
-            NSString *liczbaOsob = [NSString stringWithFormat:@"%lu",(unsigned long)[[icc getNumberofUsers:idpomieszczenia]count]];
             
+            
+            // NSLog(@"%@",[userData objectForKey:@"counterValues"]);
+            for (int x = 0; [[[nameArray objectAtIndex:i]objectForKey:@"counterValues"]count] > x; x++) {
+                
+                if ([[[[[nameArray objectAtIndex:i] objectForKey:@"counterValues"]objectAtIndex:x]objectForKey:@"counter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                    if ([[[[[nameArray objectAtIndex:i] objectForKey:@"counterValues"]objectAtIndex:x]objectForKey:@"value"] isEqualToNumber:idpomieszczenia]) {
+                        z++;
+                        
+                        //NSLog(@"%@",[[array objectAtIndex:i] objectForKey:@"id"]);
+                    }
+                }
+            }
+            
+        }
+        
+            
+            NSString *liczbaOsob = [NSString stringWithFormat:@"%d",z];
+        
         
             
              dispatch_sync(dispatch_get_main_queue(), ^{
@@ -127,7 +203,7 @@
            
             InteriorViewController *dest = [segue destinationViewController];
             NSIndexPath *path = [self.collectionView indexPathForCell:sender];
-            dest.myData = [[nameArray objectAtIndex:path.row]objectForKey:@"id"];
+            dest.myData = [[pomieszczeniaArray objectAtIndex:path.row]objectForKey:@"id"];
             
         }
    

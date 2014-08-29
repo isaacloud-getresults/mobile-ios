@@ -9,7 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 
-@interface ViewController : UIViewController <AVCaptureMetadataOutputObjectsDelegate>
+@interface ViewController : UIViewController <AVCaptureMetadataOutputObjectsDelegate,UIAlertViewDelegate>{
+    
+    BOOL zmienna;
+    
+}
 
 @property (weak, nonatomic) IBOutlet UIView *viewPreview;
 @property (weak, nonatomic) IBOutlet UILabel *lblStatus;

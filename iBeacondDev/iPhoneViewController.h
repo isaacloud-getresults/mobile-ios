@@ -17,6 +17,8 @@
     IsaaCloudConnector *icc;
     
     NSDictionary *userDictionary;
+    
+    BOOL facebookLogin;
    
     //BOOL endThread;
     //BOOL isForeground;
@@ -42,7 +44,11 @@
 - (IBAction)loginTextDidEnd:(id)sender;
 - (IBAction)passwordTextDidEnd:(id)sender;
 @property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+@property (strong, nonatomic) IBOutlet UIImageView *image;
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *activityindycator;
 
+@property (strong, nonatomic) IBOutlet UIActivityIndicatorView *registerActivity;
+@property (strong, nonatomic) IBOutlet UIImageView *registerImage;
 - (IBAction)loaduserbutton:(id)sender;
 
 @property (nonatomic, assign) id currentResponder;

@@ -13,21 +13,15 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 //#import "ESTBeaconManager.h"
 //#import "ESTBeaconRegion.h"
-#import "UserData.h"
 
 
 
-@interface PamieszczeniaCollectionViewController : UICollectionViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
+@interface AchievementsViewController : UICollectionViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
     
     NSArray *nameArray;
-    NSArray *pomieszczeniaArray;
-    
     NSNumber *idpomieszczenia;
     
     IsaaCloudConnector *icc;
-    NSTimer *timer;
-    
-    UserData  *userData;
 }
 
 

@@ -32,11 +32,41 @@
     }
     else
     {
-        NSString *pfile = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
-        NSDictionary *settings = [[NSDictionary alloc] initWithContentsOfFile:pfile];
-        gid = [(NSNumber*)[settings valueForKey:@"IC GID"] intValue];
-        aid = [(NSNumber*)[settings valueForKey:@"IC AID"] intValue];
-        token = [settings valueForKey:@"IC Token"];
+       // NSString *pfile = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
+       // NSDictionary *settings = [[NSDictionary alloc] initWithContentsOfFile:pfile];
+        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *path = [documentsDirectory stringByAppendingPathComponent:@"plist.plist"];
+        NSFileManager *fileManager = [NSFileManager defaultManager];
+        
+        if (![fileManager fileExistsAtPath: path])
+        {
+            path = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat: @"plist.plist"] ];
+        }
+        
+        
+        
+        
+        NSMutableDictionary *data;
+        
+        if ([fileManager fileExistsAtPath: path])
+        {
+            data = [[NSMutableDictionary alloc] initWithContentsOfFile: path];
+        }
+        else
+        {
+            NSString *pfile = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
+            data = [[NSMutableDictionary alloc] initWithContentsOfFile:pfile];
+           
+        }
+        
+    
+
+        gid = [(NSNumber*)[data valueForKey:@"IC GID"] intValue];
+        aid = [(NSNumber*)[data valueForKey:@"IC AID"] intValue];
+        token = [data valueForKey:@"IC Token"];
+        mobileID =[(NSNumber*)[data valueForKey:@"mobileNotification"] intValue];
     }
 }
 
@@ -699,11 +729,14 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
+
 -(NSArray*) getUsers
 {
     
     HttpClient *hc = [[HttpClient alloc] init];
-    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users?limit=0&fields=lastName%%2CfirstName%%2CcounterValues&custom=true"];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users?limit=0&custom=true"];
     NSString *method = @"GET";
     NSMutableArray *headers = [[NSMutableArray alloc] init];
     [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
@@ -716,15 +749,60 @@
     NSData* data = [hc responseData];
     
         NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    if(array)
+    {
     
-    
-    
-    
-    
-    
+    for (int i = 0; [array count] > i; i++) {
+        if ([[[array objectAtIndex:i]objectForKey:@"id"] intValue] == loggedInUser.uid) {
+           meArray = [array objectAtIndex:i];
+            //NSLog(@"%@",meArray);
+            break;
+        }
+    }
+    }
+    else
+    {
+        return array;
+    }
        return array;
 
 }
+
+-(NSDictionary*)getMyselfData{
+    return meArray;
+}
+
+
+
+
+-(NSArray*) getUsersIDs
+{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users?limit=0&fields=id"];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    
+    
+    
+    
+    
+    return array;
+    
+}
+
+
 
 -(NSString*) getMyselfName{
     
@@ -771,8 +849,174 @@
     
 }
 
+-(NSString*) getMyselfInterior{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%d?fields=counterValues",loggedInUser.uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSDictionary *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    
+    NSNumber *valueOfCounter = [[NSNumber alloc]init];
+    
+    NSLog(@"%@",[array objectForKey:@"counterValues"]);
+    for (int i = 0; [[array objectForKey:@"counterValues"]count] > i; i++) {
+        //  NSLog(@"%@",[[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"]);
+        
+        if ([[[[array objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            valueOfCounter = [[[array objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"value"];
+        }
+    }
+    
+    
+    NSString *pomieszczenie = [self getGroupsNameWithID:valueOfCounter];
+    
+    return pomieszczenie;
+    
+}
+
+-(NSString*) getUserInteriorwithID:(NSNumber*)uid{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%@?fields=counterValues",uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSDictionary *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    
+    NSNumber *valueOfCounter = [[NSNumber alloc]init];
+    
+    NSLog(@"%@",[array objectForKey:@"counterValues"]);
+    for (int i = 0; [[array objectForKey:@"counterValues"]count] > i; i++) {
+        //  NSLog(@"%@",[[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"]);
+        
+        if ([[[[array objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+            valueOfCounter = [[[array objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"value"];
+        }
+    }
+    
+    
+    NSString *pomieszczenie = [self getGroupsNameWithID:valueOfCounter];
+    
+    return pomieszczenie;
+    
+}
+
+-(NSString*) getUserInfoWithID:(NSNumber*)uid{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%@?fields=firstName%%2ClastName",uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSDictionary *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    NSString *imie;
+    NSString *nazwisko;
+    
+    NSString * value = [array objectForKey:@"firstName"];
+    if (value == nil || [value isKindOfClass:[NSNull class]]) {
+        
+        imie = @"Nemo";
+    }
+    else{
+        imie = value;
+    }
+    
+    NSString * value2 = [array objectForKey:@"lastName"];
+    if (value == nil || [value isKindOfClass:[NSNull class]]) {
+        nazwisko  = @"Nobody";
+    }
+    else{
+        nazwisko = value2;
+    }
+    
+    NSString *wynik = [NSString stringWithFormat:@"%@ %@",imie,nazwisko];
+    
+    
+    
+    return wynik;
+    
+}
 
 
+
+
+
+
+
+
+-(NSString*) getUserWithID:(NSNumber*)uid{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%@?fields=firstName%%2ClastName",uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSDictionary *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    NSString *imie;
+    NSString *nazwisko;
+    
+    NSString * value = [array objectForKey:@"firstName"];
+    if (value == nil || [value isKindOfClass:[NSNull class]]) {
+        
+        imie = @"Nemo";
+    }
+    else{
+        imie = value;
+    }
+    
+    NSString * value2 = [array objectForKey:@"lastName"];
+    if (value == nil || [value isKindOfClass:[NSNull class]]) {
+        nazwisko  = @"Nobody";
+    }
+    else{
+        nazwisko = value2;
+    }
+    
+    NSString *wynik = [NSString stringWithFormat:@"%@ %@",imie,nazwisko];
+    
+    
+    
+    return wynik;
+    
+}
 
 
 
@@ -808,6 +1052,40 @@
     return imagetoto;
     
 }
+
+-(UIImage*) getUserPhotoWithID:(NSNumber*)uid{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%@?fields=custom&custom=true",uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    UIImage *imagetoto = [[UIImage alloc]init];
+    NSDictionary *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    if ([[array objectForKey:@"custom"] count] != 0 ){
+        
+        //[[userData objectForKey:@"custom"]objectForKey:@"facebookPhoto"];
+        imagetoto = [UIImage imageWithData: [NSData dataWithContentsOfURL:[NSURL URLWithString:[[array objectForKey:@"custom"]objectForKey:@"facebookPhoto"]]]];
+        
+    }else{
+        imagetoto = [UIImage imageNamed:@"111-user-icon.png"];
+        
+    }
+    
+    
+    
+    return imagetoto;
+    
+}
+
 
 
 
@@ -853,7 +1131,7 @@
         }
         
     }
-   // valueOfCounter = [NSNumber numberWithInt:wynik];
+// valueOfCounter = [NSNumber numberWithInt:wynik];
    // return valueOfCounter;
     return array2;
 }
@@ -1014,7 +1292,7 @@
 {
     
     HttpClient *hc = [[HttpClient alloc] init];
-    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/groups?fields=label"];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/groups?fields=label%%2CcounterValues"];
     NSString *method = @"GET";
     NSMutableArray *headers = [[NSMutableArray alloc] init];
     [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
@@ -1036,6 +1314,63 @@
     
     
 }
+
+-(NSArray*) getAchievements
+{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/%d/achievements",loggedInUser.uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    
+    
+    return array;
+   // https://api.isaacloud.com/v1/cache/users/groups/4/achievements
+    
+}
+
+
+-(NSArray*) getInterirorAchievements:(NSNumber*)uid
+{
+    
+    HttpClient *hc = [[HttpClient alloc] init];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/cache/users/groups/%@/achievements",uid];
+    NSString *method = @"GET";
+    NSMutableArray *headers = [[NSMutableArray alloc] init];
+    [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
+    NSError *err1 = nil;
+    
+    
+    [hc sendRequest:url withHeaders:headers withBody:nil withHTTPMethod:method error:&err1];
+    
+    
+    NSError *err2 = nil;
+    
+    NSData* data = [hc responseData];
+    
+    NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingMutableContainers error:&err2];
+    
+    
+    
+    return array;
+    
+}
+
+
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1182,13 +1517,16 @@
 
 -(NSArray*)getNotifications
 {
+    //NSLog(@"getNotifications");
     NSMutableArray *notifications = [[NSMutableArray alloc] init];
+    
     if(loggedInUser.accesToken == nil)
     {
+        NSLog(@"token = nil!");
         return nil;
     }
     HttpClient *hc = [[HttpClient alloc] init];
-    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/queues/notifications?limit=0"];
+    NSString *url = [NSString stringWithFormat: @"https://api.isaacloud.com/v1/queues/notifications?limit=50&order=id%%3ADESC"];
     NSString *method = @"GET";
     NSMutableArray *headers = [[NSMutableArray alloc] init];
     [headers addObject:[[HeaderParam alloc] initWithField:@"Authorization" withValue:[@"Bearer " stringByAppendingString:loggedInUser.accesToken] set:NO]];
@@ -1197,18 +1535,40 @@
     {
         NSError *err2 = nil;
         NSArray *data = [NSJSONSerialization JSONObjectWithData:hc.responseData options:kNilOptions error:&err2];
+      //  NSLog(@"data: %@", data);
+        
+        
+        for(NSDictionary* n in data)
+        {
+            //  NSLog(@"data : %@", data);
+            
+            if([[n valueForKey:@"typeId"] intValue] == 1)
+            {
+                
+                NSLog(@"%@",[n valueForKey:@"typeId"]);
+                notyficationsArray = data;
+                
+            }
+        }
+        
+     
         if(err2 == nil)
         {
+          //  NSLog(@"err2 == nil");
             for(NSDictionary* n in data)
             {
-                if([[n valueForKey:@"status"] intValue] == 0)
+              //  NSLog(@"data : %@", data);
+           
+                if(([[n valueForKey:@"subjectId"] intValue] == loggedInUser.uid) && ([[n valueForKey:@"status"] intValue] == 0 ) && ([[n valueForKey:@"typeId"] intValue] == mobileID ))
                 {
-                    ICNotification *notification = (ICNotification*)[JSONParser createObjectFromJSON:[n valueForKey:@"data"] withClassName:@"ICNotification"];
+                    ICNotification *notification = (ICNotification*)[JSONParser createObjectFromJSON:n withClassName:@"ICNotification"];
                     [notifications addObject:notification];
                     [self setNotificationStatusDone:[n valueForKey:@"id"]];
+                    NSLog(@"notification : %@", [n valueForKey:@"data"]);
+                  //  NSLog(@"notification : %@ %@ %@ ", notification.id, notification.game, notification.data);
                 }
             }
-            NSLog(@"Notifications %@",notifications);
+            //NSLog(@"Notifications %d",[notifications count]);
             return notifications;
         }
     }
@@ -1216,9 +1576,9 @@
 }
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+-(NSArray*)getNotificationsArray{
+    return notyficationsArray;
+}
 
 -(void)setNotificationStatusDone:(NSString*)notificationId
 {
@@ -1235,9 +1595,7 @@
     [headers addObject:[[HeaderParam alloc] initWithField:@"Content-Type" withValue:@"text/json" set:YES]];
     NSError *err1 = nil;
     [hc sendRequest:url withHeaders:headers withBody:body withHTTPMethod:method error:&err1];
-    NSLog(@"DONE");
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

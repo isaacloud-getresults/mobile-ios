@@ -1,3 +1,5 @@
+
+
 //
 //  PamieszczeniaCollectionViewController.h
 //  iGetResults
@@ -13,21 +15,15 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 //#import "ESTBeaconManager.h"
 //#import "ESTBeaconRegion.h"
-#import "UserData.h"
 
 
 
-@interface PamieszczeniaCollectionViewController : UICollectionViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
+@interface InerAchievViewController : UICollectionViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
     
     NSArray *nameArray;
-    NSArray *pomieszczeniaArray;
-    
     NSNumber *idpomieszczenia;
     
     IsaaCloudConnector *icc;
-    NSTimer *timer;
-    
-    UserData  *userData;
 }
 
 
@@ -39,6 +35,8 @@
 @property (strong, nonatomic) IBOutlet UIImageView *interiorImage;
 @property (strong, nonatomic) IBOutlet UILabel *interiorNameLabel;
 @property (strong, nonatomic) IBOutlet UILabel *liczbaOsobArray;
+
+@property (nonatomic, strong) NSNumber *myData;
 
 
 @end

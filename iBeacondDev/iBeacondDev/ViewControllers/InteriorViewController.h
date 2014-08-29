@@ -8,12 +8,19 @@
 
 #import <UIKit/UIKit.h>
 #import "IsaaCloudConnector.h"
+#import "UserData.h"
 
 
 @interface InteriorViewController : UIViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
     
     
+    NSArray *nameArray;
     IsaaCloudConnector *icc;
+    NSArray *pomieszczeniaArray;
+    
+    NSMutableArray *usersOfInterior;
+    
+    UserData  *userformData;
 }
 
 

@@ -11,13 +11,18 @@
 #import "ICNotification.h"
 #import <CoreLocation/CoreLocation.h>
 #import <CoreBluetooth/CoreBluetooth.h>
+#import "UserData.h"
 
 
 @interface FirstTableViewController :  UITableViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate, UITableViewDelegate, UITableViewDataSource>{
   
     
     NSArray *nameArray;
+    NSArray *pomieszczeniaArray;
     IsaaCloudConnector *icc;
+    
+    UserData  *userData;
+    
     
     CLLocationManager *_locationManager;
     NSUUID *_uuid;
@@ -33,15 +38,28 @@
     NSNumber *beaconMajor ;
     NSNumber *beaconMinor ;
     
+    NSString *beaconuuid;
+    NSTimer *timer;
+    
+    BOOL endThread;
+    BOOL isForeground;
+    
+    
+    BOOL isPreviousThreadFinished;
+    
 }
+
 -(void)showNotification:(NSString *)text;
--(NSMutableArray*)dajMiTablice:(NSMutableArray *)tablica;
+-(void)stopNotificationThread;
+-(void)stopRanging;
+
+
 //@property (strong) NSMutableArray *nameArray;
 @property (strong,nonatomic) NSMutableArray *beaconsArray;
 @property (strong,nonatomic) NSMutableArray *imionaArray;
 @property(strong,nonatomic) NSNumber *userUid;
 
 @property (strong, nonatomic) CLBeaconRegion *myBeaconRegion;
-@property (strong, nonatomic) CLLocationManager *locationManager;
+@property (strong, nonatomic) CLLocationManager *_locationManager;
 
 @end

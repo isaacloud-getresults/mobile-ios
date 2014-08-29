@@ -7,6 +7,7 @@
 //
 
 #import "SecondTableViewController.h"
+#import "FirstTableViewController.h"
 
 @interface SecondTableViewController ()
 
@@ -29,17 +30,23 @@
 {
     [super viewDidLoad];
     
-    IsaaCloudConnector *icc = [[IsaaCloudConnector alloc]init ];
-    nameArray = [[NSMutableArray alloc]initWithArray:[icc getInteriors] ];
-    NSLog(@"%@",nameArray);
+  
+  //  FirstTableViewController *sharedManager = [FirstTableViewController sharedManager];
+  //  NSLog(@"NULLLL   %@",sharedManager.pomieszczeniaArray);
+
+    
+    //IsaaCloudConnector *icc = [[IsaaCloudConnector alloc]init ];
+  //  nameArray = [[NSMutableArray alloc]initWithArray:sharedManager.pomieszczeniaArray ];
+    //NSLog(@"%@",nameArray);
     
     
-    
+   
     
     
   //  NSLog(@"%@",[NSString stringWithFormat:@"RSSI: %ld", ]);
     
 }
+
 
 - (void)didReceiveMemoryWarning
 {
@@ -71,6 +78,9 @@
     
     
     cell.textLabel.text = [nameArray objectAtIndex:indexPath.row];
+    
+    
+    NSLog(@"hahahahah %ld",(long)indexPath.row);
     
     return cell;
 }

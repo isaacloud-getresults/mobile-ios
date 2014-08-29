@@ -31,10 +31,29 @@
     _captureSession = nil;
     
     // Set the initial value of the flag to NO.
-    _isReading = NO;
+   // _isReading = NO;
+    
+  
+    
+    //To insert the data into the plist
+ //   int value = 5;
+ //   [data setObject:[NSNumber numberWithInt:value] forKey:@"value"];
+  //  [data writeToFile: path atomically:YES];
+    
+    
+ //   NSLog(@"%@",data);
+    
+    //To reterive the data from the plist
+ //   NSMutableDictionary *savedStock = [[NSMutableDictionary alloc] initWithContentsOfFile: path];
+ //   int value1;
+//    value1 = [[savedStock objectForKey:@"value"] intValue];
+  //  NSLog(@"%i",value1);
+    zmienna = TRUE;
     
     // Begin loading the sound effect so to have it ready for playback when it's needed.
     [self loadBeepSound];
+    
+    [self startReading];
 }
 
 - (void)didReceiveMemoryWarning
@@ -123,6 +142,9 @@
     
     // Remove the video preview layer from the viewPreview view's layer.
     [_videoPreviewLayer removeFromSuperlayer];
+    
+   
+    
 }
 
 
@@ -146,6 +168,13 @@
     }
 }
 
+-(void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex{
+    
+    [self performSegueWithIdentifier:@"home" sender:self];
+    
+    
+}
+
 
 #pragma mark - AVCaptureMetadataOutputObjectsDelegate method implementation
 
@@ -159,16 +188,137 @@
             // If the found metadata is equal to the QR code metadata then update the status label's text,
             // stop reading and change the bar button item's title and the flag's value.
             // Everything is done on the main thread.
-            [_lblStatus performSelectorOnMainThread:@selector(setText:) withObject:[metadataObj stringValue] waitUntilDone:NO];
+          //  [_lblStatus performSelectorOnMainThread:@selector(setText:) withObject:[metadataObj stringValue] waitUntilDone:NO];
+            
+            
+            
+            NSError *serializeError = nil;
+            NSLog(@"%@",[metadataObj stringValue]);
+            
+            if (zmienna) {
+                
+                NSString *pelnurl = [NSString stringWithFormat:@"%@config.json",[metadataObj stringValue]];
+                
+                if([pelnurl rangeOfString:@".getresults.isaacloud.com"].location == NSNotFound)
+                {
+                    NSLog(@"not found");
+                    
+                   // UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Alarm"
+                                             //                           message:@"BAD QR CODE" delegate:nil
+                                              //                cancelButtonTitle:@"OK"
+                                              //                otherButtonTitles:nil];
+                 //   [alertView show];
+                    
+                    [self performSelectorOnMainThread:@selector(stopReading) withObject:nil waitUntilDone:NO];
+                    // [_bbitemStart performSelectorOnMainThread:@selector(setTitle:) withObject:@"Start!" waitUntilDone:NO];
+                    
+                    _isReading = NO;
+                    
+                     zmienna = FALSE;
+                    
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:^
+                     {
+                         NSLog(@"show alert!");
+                         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"BAD QR CODE" message:@"Zeskanowales zly qr code." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                         [alert show];
+                     }];
+
+                    
+                }
+                else
+                {
+                    NSLog(@"found");
+                
+                
+                
+                NSURL *url =[NSURL URLWithString:pelnurl];
+                NSData *json = [NSData dataWithContentsOfURL:url];
+                NSDictionary *jsonData = [NSJSONSerialization
+                                          JSONObjectWithData:json
+                                          options:NSJSONReadingMutableContainers
+                                          error:&serializeError];
+                NSLog(@"%@",jsonData);
+
+                
+                
+                
+                
+                
+                NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+                NSString *documentsDirectory = [paths objectAtIndex:0];
+                NSString *path = [documentsDirectory stringByAppendingPathComponent:@"plist.plist"];
+                NSFileManager *fileManager = [NSFileManager defaultManager];
+                
+                if (![fileManager fileExistsAtPath: path])
+                {
+                    path = [documentsDirectory stringByAppendingPathComponent: [NSString stringWithFormat: @"plist.plist"] ];
+                }
+                
+                
+                
+                
+                NSMutableDictionary *data;
+                
+                if ([fileManager fileExistsAtPath: path])
+                {
+                    data = [[NSMutableDictionary alloc] initWithContentsOfFile: path];
+                }
+                else
+                {
+                    // If the file doesn’t exist, create an empty dictionary
+                    data = [[NSMutableDictionary alloc] init];
+                }
+                
+            NSString *nazwa = [[metadataObj stringValue] stringByReplacingOccurrencesOfString:@".getresults.isaacloud.com/" withString:@""];
+            NSString *nazwa2 = [nazwa stringByReplacingOccurrencesOfString:@"http://" withString:@""];
+         
+            NSString *pfile = [[NSBundle mainBundle] pathForResource:@"Settings" ofType:@"plist"];
+            NSMutableDictionary *settings = [[NSMutableDictionary alloc] initWithContentsOfFile:pfile];
+                NSString *base64 = [jsonData objectForKey:@"iosbase64"];
+                [settings setObject:base64 forKey:@"IC Token"];
+            NSNumber *clientId = (NSNumber*)[jsonData objectForKey:@"clientid"];
+            [settings setObject:clientId forKey:@"IC GID"];
+            
+            NSNumber *appId = (NSNumber*)[jsonData objectForKey:@"iosid"];
+            [settings setObject:appId forKey:@"IC AID"];
+                
+                NSString *uuid = [NSString stringWithFormat:@"%@",[jsonData objectForKey:@"uuid"]];
+                 [settings setObject:uuid forKey:@"UUID"];
+                
+                NSNumber *notiID = (NSNumber*)[jsonData objectForKey:@"mobileNotification"];
+                [settings setObject:notiID forKey:@"mobileNotification"];
+            
+            [settings writeToFile:pfile atomically:YES];
+                
+                [settings writeToFile: path atomically:YES];
+                
+           NSLog(@"%@",settings);
+          //      NSLog(@"%@",nazwa2);
+           
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^
+                 {
+                     NSLog(@"show alert!");
+                     UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Zapisano ustawienia" message:nazwa2 delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil];
+                     [alert show];
+                 }];
+
+                zmienna = FALSE;
+                
+                
+                
+            }
             
             [self performSelectorOnMainThread:@selector(stopReading) withObject:nil waitUntilDone:NO];
-            [_bbitemStart performSelectorOnMainThread:@selector(setTitle:) withObject:@"Start!" waitUntilDone:NO];
+           // [_bbitemStart performSelectorOnMainThread:@selector(setTitle:) withObject:@"Start!" waitUntilDone:NO];
 
             _isReading = NO;
             
             // If the audio player is not nil, then play the sound effect.
             if (_audioPlayer) {
                 [_audioPlayer play];
+            }
+                
+                
             }
         }
     }

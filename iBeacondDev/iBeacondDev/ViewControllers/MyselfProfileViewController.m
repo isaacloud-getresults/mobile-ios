@@ -6,14 +6,13 @@
 //  Copyright (c) 2014 SoInteractive S.A. All rights reserved.
 //
 
-#import "ProfileViewController.h"
-#import "UserData.h"
+#import "MyselfProfileViewController.h"
 
-@interface ProfileViewController ()
+@interface MyselfProfileViewController ()
 
 @end
 
-@implementation ProfileViewController
+@implementation MyselfProfileViewController
 
 
 
@@ -31,44 +30,72 @@
     [super viewDidLoad];
     
     
+    
+    icc = [[IsaaCloudConnector alloc]init ];
+    
+  
+    // NSLog(@"%@",nameArray);
+    
+    
+    // userArray = [[NSMutableArray alloc]initWithArray:[icc getUserWithUID:self.myData] ];
+    // NSLog(@"%@",[icc getUserWithUID:self.myData]);
+    
+    
+   // userData = [[NSDictionary alloc]initWithDictionary:[icc getUserWithUID:[icc getUserUID]]];
+   // nameArray = [icc getInteriors];
+    
+    //[self organizer];
+    
+    
+    // Do any additional setup after loading the view.
+    //
+    // NSLog(@"%@",[icc getUserWithUID:self.myData]);
+    
+    
     userformData = [UserData globalUserData];
     
     
-   // icc = [[IsaaCloudConnector alloc]init ];
+    // icc = [[IsaaCloudConnector alloc]init ];
     pomieszczeniaArray = userformData.pomieszczeniaArray;
-   // NSLog(@"%@",nameArray);
+    // NSLog(@"%@",nameArray);
     
     
-   // userArray = [[NSMutableArray alloc]initWithArray:[icc getUserWithUID:self.myData] ];
-   // NSLog(@"%@",[icc getUserWithUID:self.myData]);
-
+    // userArray = [[NSMutableArray alloc]initWithArray:[icc getUserWithUID:self.myData] ];
+    // NSLog(@"%@",[icc getUserWithUID:self.myData]);
+    
     
     //userData = [[NSDictionary alloc]initWithDictionary:[icc getUserWithUID:self.myData]];
     
     
     nameArray = userformData.nameArray;
     
-    for (int i = 0; [nameArray count]>i; i++) {
-
-        if ([[[nameArray objectAtIndex:i] objectForKey:@"id"] isEqualToNumber:self.myData]){
     
+    
+    
+    for (int i = 0; [nameArray count]>i; i++) {
+        
+        if ([[[nameArray objectAtIndex:i] objectForKey:@"id"] isEqualToNumber:[icc getUserUID]]){
+            
             userData = [nameArray objectAtIndex:i];
             break;
-           }
-           
-           }
+        }
+        
+    }
     
-   
+    
+
     
     //[self organizer];
     
     
-    liczba = [NSNumber numberWithInt:[userData count]];
+   // liczba = [NSNumber numberWithInt:[userData count]];
     [self organizer];
     
-    // Do any additional setup after loading the view.
- //
-  // NSLog(@"%@",[icc getUserWithUID:self.myData]);
+
+    
+    
+    
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -80,21 +107,22 @@
 -(void)viewDidAppear:(BOOL)animated{
     
     
+   // [self organizer];
 }
 
 
 
 
 /*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+ #pragma mark - Navigation
+ 
+ // In a storyboard-based application, you will often want to do a little preparation before navigation
+ - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+ {
+ // Get the new view controller using [segue destinationViewController].
+ // Pass the selected object to the new view controller.
+ }
+ */
 
 -(void)organizer{
     
@@ -113,7 +141,7 @@
     }
     
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     NSString * value2 = [userData objectForKey:@"firstName"];
     if (value2 == nil || [value2 isKindOfClass:[NSNull class]]) {
         self.firstNameLabel.text = @"Nemo";
@@ -123,7 +151,7 @@
     }
     
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     NSNumber * value3 = [userData objectForKey:@"gender"];
     
     NSLog(@"%@",value3);
@@ -139,7 +167,7 @@
     }
     
     ////////////////////////////////////////////////////////////////////////////////
-
+    
     NSString* date3 = [userData objectForKey:@"birthDate"];
     if (date3 == nil || [date3 isKindOfClass:[NSNull class]]) {
         self.ageLabel.text = @"UNKNOWN";
@@ -160,10 +188,10 @@
     }
     
     ////////////////////////////////////////////////////////////////////////////////
-  
-   
     
-   
+    
+    
+    
     if ([[userData objectForKey:@"leaderboards"] count] == 0 ) {
         
         self.pointsLabel.text = @"UNKNOWN";
@@ -173,7 +201,7 @@
         score = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"score" ];
         NSNumber *position = [[NSNumber alloc] init];
         position = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"position" ];
-      
+        
         NSString *scoreNumb = [NSString stringWithFormat:@"%@",score];
         NSString *positionNumb = [NSString stringWithFormat:@"%@",position];
         
@@ -182,7 +210,7 @@
         
         
         NSLog(@"%@",scoreNumb);
-         NSLog(@"%@",positionNumb);
+        NSLog(@"%@",positionNumb);
         
         NSLog(@"Wykonalo sie");
     }
@@ -193,17 +221,17 @@
     
     if ([[userData objectForKey:@"counterValues"]count] != 0) {
         //  NSLog(@"%lu",(unsigned long)[[[nameArray objectAtIndex:indexPath.row]objectForKey:@"counterValues"]count]);
-    
-    for (int i = 0; [[userData objectForKey:@"counterValues"]count] > i; i++) {
-        if ([[[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
-            valueOfCounter = [[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"value"];
-            break;
+        
+        for (int i = 0; [[userData objectForKey:@"counterValues"]count] > i; i++) {
+            if ([[[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"counter"] isEqualToNumber:[NSNumber numberWithInt:1]]) {
+                valueOfCounter = [[[userData objectForKey:@"counterValues"]objectAtIndex:i]objectForKey:@"value"];
+                break;
+            }
         }
-    }
     }else{
         valueOfCounter = [NSNumber numberWithInteger:3];
     }
-
+    
     //    NSString *pomieszczenie = [icc getGroupsNameWithID:valueOfCounter];
     NSString *pomieszczenie = [[NSString alloc]init];
     
@@ -228,7 +256,7 @@
         NSLog(@"czy to?");
     }
     
-  //   self.profilePhoto = [[UIImageView alloc] initWithFrame:CGRectMake(0, 40, 100, 100)];
+    //   self.profilePhoto = [[UIImageView alloc] initWithFrame:CGRectMake(0, 40, 100, 100)];
     
     self.profilePhoto.image = imagetoto;
     
@@ -236,73 +264,12 @@
     self.interiorLabel.text = pomieszczenie;
     
     //self.profilePhoto= imageView;
-
+    
     
     //NSLog(@"%@",pomieszczenie);
     self.interiorLabel.text = pomieszczenie;
     
-   /*
-   NSString *text = [userData objectForKey:@"leaderboards"];
-    NSLog(@"%@",text);
-    if (text == nil || [text isKindOfClass:[NSNull class]] ) {
-        text = nil;
-        self.pointsLabel.text = @"UNKNOWN";
-        self.wonGamesLabel.text = @"UNKNOWN";
-    }else{
-     //   self.pointsLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"score" ];
-        // self.wonGamesLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"position" ];
-        
-        NSLog(@"Wykonalo sie");
-    }
-  
-    */
     
-    // id result = [userData objectForKey:@"leaderboards"];
-  /*
-    id result = [userData objectForKey:@"leaderboards"];
-    if ([result length] > 0) {
-         //self.pointsLabel.text = @"UNKNOWN";
-        //self.wonGamesLabel.text = @"UNKNOWN";
-   
-    }else{
-    
-            NSLog(@"wykonalo sie");
-        //    self.pointsLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"score" ];
-          //  self.wonGamesLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"position" ];
-
-    }
-    */
-    
-   
-    /*
-    id result2 = [userData objectForKey:@"leaderboards"];
-    
-    if([result2 length] >0)
-    {
-        NSLog(@"value is not empty! %@",result2);
-    }
-    else {
-        NSLog(@"value is empty! %@",result2);
-    }
-    
-    */
-   /*
-    NSString * liderboard = [[userData objectForKey:@"leaderboards"]objectAtIndex:1];
-   if (liderboard == nil || [liderboard isKindOfClass:[NSNull class]]) {
-        self.firstNameLabel.text = @"UNKNOWN";
-        NSLog(@"nie wykonalo sie");
-    }
-    else{
-        NSLog(@"wykonalo sie");
-        self.pointsLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"score" ];
-        self.wonGamesLabel.text = [[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"position" ];
-   
-      //  NSLog(@"%@",[[[userData objectForKey:@"leaderboards"]objectAtIndex:1]objectForKey:@"position" ]);
-    }
-   */
- //  NSLog(@"%lu",(unsigned long)[[userData objectForKey:@"wonGames"]count]);
-    
-
 }
 
 

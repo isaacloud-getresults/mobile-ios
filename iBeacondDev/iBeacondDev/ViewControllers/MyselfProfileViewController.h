@@ -11,13 +11,13 @@
 #import "UserData.h"
 
 
-@interface ProfileViewController : UIViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate>{
+@interface MyselfProfileViewController : UIViewController<ICCLoginDelegate, ICCRegistrationDelegate, ICCAdminTokenDelegate>{
     
     NSDictionary* userData;
     NSNumber *liczba;
     NSArray *nameArray;
     IsaaCloudConnector *icc;
-    NSArray *pomieszczeniaArray;
+      NSArray *pomieszczeniaArray;
     
     UserData  *userformData;
     
